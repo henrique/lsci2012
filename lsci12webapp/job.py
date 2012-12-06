@@ -9,7 +9,7 @@ class Job(db.Model):
     result = db.FloatProperty()
     running = db.BooleanProperty()
     finished = db.BooleanProperty()
-    
+
 
     def getJSON(self):
         s = {'jobId': self.jobId, 'vmIp': self.vmIp, 'paraSigma': self.paraSigma, 'paraEA': self.paraEA, 'running': self.running, 'finished': self.finished, 'result': self.result}
