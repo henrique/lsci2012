@@ -31,15 +31,8 @@ class Job():
         self.running = False
         self.finished = False
         self.result = None
+        self.counter = 0
         self.__dict__.update(entries)
-    
-#    jobId = db.IntegerProperty()
-#    vmIp = db.StringProperty()
-#    paraSigma = db.FloatProperty()
-#    paraEA = db.FloatProperty()
-#    result = db.FloatProperty()
-#    running = db.BooleanProperty()
-#    finished = db.BooleanProperty()
 
     @staticmethod
     def serialize(obj):
@@ -47,15 +40,6 @@ class Job():
         
     def __repr__(self):
         return str(self.__dict__)
- 
-#    def set(self, job):
-#        self.jobId = job['jobId']
-#        self.vmIp = job['vmIp']
-#        self.paraSigma = job['paraSigma']
-#        self.paraEA = job['paraEA']
-#        self.running = job['running']
-#        self.finished = job['finished']
-#        self.result = job['result']
         
         
         
@@ -63,20 +47,12 @@ class VM(dict):
     def __init__(self, **entries): 
         self.__dict__.update(entries)
     
-#    ip = db.StringProperty()
-#    vmtype = db.StringProperty()
-#    dateUpdate = db.DateTimeProperty(auto_now_add=True)
-    
     @staticmethod
     def serialize(obj):
         return obj.__dict__
         
     def __repr__(self):
         return str(self.__dict__)
-    
-#    def set(self, vm):
-#        self.ip = vm['ip']
-#        self.vmtype = vm['vmtype']
 
 
 

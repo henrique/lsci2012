@@ -4,19 +4,14 @@ import random
 from vm import *
 from job import *
 
-<<<<<<< HEAD
 #### URL #############
 # localhost:8080
 # jcluster12.appspot.com
 ######################
 url = 'jcluster12.appspot.com'
 
-=======
 N_JOBS = 10
->>>>>>> b4c747002a5497bd27a0b803c799967e05051ab0
 
-#url = 'jcluster12.appspot.com'
-url = 'localhost:8080'
 
 # JOBS
 jobs = []
@@ -50,6 +45,7 @@ file.close()
 # HTTP PUT Job's
 connection =  httplib.HTTPConnection(url)
 body_content = data_string_jobs
+print body_content
 headers = {"User-Agent": "python-httplib"}
 connection.request('PUT', '/put/', body_content, headers)
 result = connection.getresponse()
@@ -62,6 +58,7 @@ connection.close()
 # HTTP PUT VM's
 connection =  httplib.HTTPConnection(url)
 body_content = data_string_vms
+print body_content
 connection.request('PUT', '/put/', body_content, headers)
 result = connection.getresponse()
 if result.status == 200:
