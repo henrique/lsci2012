@@ -7,7 +7,7 @@ from job import *
 # localhost:8080
 # jcluster12.appspot.com
 ######################
-url = 'localhost:8080'
+url = 'jcluster12.appspot.com'
 
 
 # 3 Jobs as test for PUT
