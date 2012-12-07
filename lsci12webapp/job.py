@@ -3,7 +3,6 @@ from google.appengine.ext import db
 class Job(db.Model):
     
     jobId = db.IntegerProperty()
-    iteration = db.IntegerProperty()
     vmIp = db.StringProperty()
     paraSigma = db.FloatProperty()
     paraEA = db.FloatProperty()
@@ -11,10 +10,11 @@ class Job(db.Model):
     running = db.BooleanProperty()
     finished = db.BooleanProperty()
     counter = db.IntegerProperty(required=True, default=0)
+    iteration = db.IntegerProperty(required=True, default=0)
     
 
     def getJSON(self):
-        s = {'jobId': self.jobId, 'iteration': self.iteration, 'vmIp': self.vmIp, 'paraSigma': self.paraSigma, 'paraEA': self.paraEA, 'running': self.running, 'finished': self.finished, 'result': self.result, 'counter': self.counter}
+        s = {'jobId': self.jobId, 'vmIp': self.vmIp, 'paraSigma': self.paraSigma, 'paraEA': self.paraEA, 'running': self.running, 'finished': self.finished, 'result': self.result, 'counter': self.counter, 'iteration': self.iteration}
         return s
     
     def __repr__(self):
@@ -22,7 +22,6 @@ class Job(db.Model):
     
     def set(self, job):
         self.jobId = job['jobId']
-        self.iteration = job['iteration']
         self.vmIp = job['vmIp']
         self.paraSigma = job['paraSigma']
         self.paraEA = job['paraEA']
@@ -30,10 +29,10 @@ class Job(db.Model):
         self.finished = job['finished']
         self.result = job['result']
         self.counter = job['counter']
+        self.iteration = job['iteration']
 
     @staticmethod
-    def currentIteration(self):
-        q = db.GqlQuery(Job)
-        job = q.order("-iter").fetch(1)
-        print "currentIteration", job
-        return job.iter
+    def currentIteration():
+        for it in db.GqlQuery("SELECT iteration FROM Job ORDER BY iteration DESC").fetch(1):
+            return it
+        return -1

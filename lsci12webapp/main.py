@@ -5,7 +5,6 @@ from google.appengine.ext import db
 from vm import *
 from job import *
 
-
 class MainPage(webapp2.RequestHandler):
   def get(self):
       self.response.headers['Content-Type'] = 'text/html'
@@ -63,13 +62,13 @@ class GetAllJobs(webapp2.RequestHandler):
     def get(self):
         self.response.headers['Content-Type'] = 'application/json'
         cur_iter = Job.currentIteration()
-        logging.info("get all jobs received iter:" + cur_iter)
+        logging.info("get all jobs received iteration:" + str(cur_iter))
         
         # GET a not running job from DB
         jobs = db.GqlQuery("Select * "
                            "FROM Job "
-                           #"WHERE iter = " + cur_iter
-                           "ORDER BY iter DESC, jobId")
+                           #"WHERE iteration = " + cur_iter
+                           "ORDER BY jobId")
         countJobs = jobs.count()
         logging.info("countJobs: "+str(countJobs))
         if countJobs > 0:
@@ -102,6 +101,7 @@ class GetAllVms(webapp2.RequestHandler):
         logging.info(content)
         self.response.out.write(content)
 
+
 class PutAllJobs(webapp2.RequestHandler):
     def put(self):
         
@@ -117,7 +117,7 @@ class PutAllJobs(webapp2.RequestHandler):
             logging.info('count jobs: '+str(count_jobs))
             jobs = []
             for job in decoded['jobs']:
-                temp = Job(key_name=str(job['iteration'])+':'+str(job['jobId']))
+                temp = Job(key_name=str(job['jobId']))
                 temp.set(job)
                 jobs.append(temp)
             
@@ -174,7 +174,7 @@ class PutJob(webapp2.RequestHandler):
             return
         jobs = []
         for job in decoded['jobs']:
-            temp = Job(key_name=str(job['iteration'])+':'+str(job['jobId']))
+            temp = Job(key_name=str(job['jobId']))
             temp.set(job)
             # Lookup Job in DB and see if already running
             # if not running overwrite and send 200 else 500
@@ -192,6 +192,7 @@ class PutJob(webapp2.RequestHandler):
         for job in jobs:
             job.put()
             logging.info('put job['+str(job.jobId)+'] into datastore')          
+
 
 class PutVm(webapp2.RequestHandler):
     def put(self):
@@ -227,14 +228,14 @@ class PutVm(webapp2.RequestHandler):
         
 
 app = webapp2.WSGIApplication([('/', MainPage),
-                               ('/put/jobs/', PutAllJobs),
-                               ('/put/vms/', PutAllVms),
-                               ('/put/job/', PutJob),
-                               ('/put/vm/', PutVm),
-                               ('/get/job/', GetJob),
-                               ('/get/vm/', GetVm),
-                               ('/get/jobs/', GetAllJobs),
-                               ('/get/vms/', GetAllVms)],
+                               ('/put/jobs', PutAllJobs),
+                               ('/put/vms', PutAllVms),
+                               ('/put/job', PutJob),
+                               ('/put/vm', PutVm),
+                               ('/get/job', GetJob),
+                               ('/get/vm', GetVm),
+                               ('/get/jobs', GetAllJobs),
+                               ('/get/vms', GetAllVms)],
                               debug=True)
 
 # APP STARTUP - INIT DB
