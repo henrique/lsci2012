@@ -7,6 +7,7 @@ import shutil
 import subprocess
 import httplib
 import json
+import socket
 
 from subprocess import call
 
@@ -57,22 +58,21 @@ class VM(dict):
 
 
 class LocalState():
-    state = {}
+    state = {} #TODO: persist state on db 
     
     @staticmethod
     def save(key, obj):
         print "Saving", obj.__dict__
 #        with open(key + '.bak', 'w') as f:
 #            data = json.dumps(obj.__dict__, indent=2)
-#            f.write(str(data))
-        LocalState.state[key] = obj.__dict__
+        LocalState.state = obj.__dict__
             
     @staticmethod
     def load(key, obj):
 #        with open(key + '.bak', 'r') as f:
 #            data = f.read_all()
 #            data = json.loads(data)
-            data = LocalState.state[key]
+            data = LocalState.state
             print "Loading", data
             obj.__dict__.update(data)
             return obj
@@ -117,118 +117,136 @@ def pop2Jobs(opt):
 
 def getJobs():
     # GET  jobs
-    connection =  httplib.HTTPConnection(url)
-    connection.request('GET', '/get/jobs/')
-    result = connection.getresponse()
-    data = result.read()
     jobs = []
-    
-    if result.status == 200:
-        decoded = json.loads(data)
-        if decoded.has_key('jobs'): 
-            count_jobs = len(decoded['jobs'])
-            print 'count jobs: '+str(count_jobs)
-            for job in decoded['jobs']:
-                temp = Job(**job)
-                jobs.append(temp)
-                print job
-    else:
-        print "ERROR http status = "+str(result.status)
+    try:
+        connection =  httplib.HTTPConnection(url)
+        connection.request('GET', '/get/jobs/')
+        result = connection.getresponse()
+        data = result.read()
         
-    connection.close()
+        if result.status == 200:
+            decoded = json.loads(data)
+            if decoded.has_key('jobs'): 
+                count_jobs = len(decoded['jobs'])
+                print 'count jobs: '+str(count_jobs)
+                for job in decoded['jobs']:
+                    temp = Job(**job)
+                    jobs.append(temp)
+                    print job
+        else:
+            print "ERROR http status = "+str(result.status)
+            
+        connection.close()
+    except socket.gaierror:
+        pass
     return jobs
     
     
 def getNextJob():
     # GET single job
-    connection =  httplib.HTTPConnection(url)
-    connection.request('GET', '/get/job/')
-    result = connection.getresponse()
-    data = result.read()
     job = None
-    
-    if result.status == 200:
-        decoded = json.loads(data)
-        if decoded.has_key('jobs'): 
-            count_jobs = len(decoded['jobs'])
-            print 'count jobs: '+str(count_jobs)
-            for j in decoded['jobs']:
-                job = Job(**j)
-                print job
-                break
-    else:
-        print "ERROR http status = "+str(result.status)
+    try:
+        connection =  httplib.HTTPConnection(url)
+        connection.request('GET', '/get/job/')
+        result = connection.getresponse()
+        data = result.read()
         
-    connection.close()
+        if result.status == 200:
+            decoded = json.loads(data)
+            if decoded.has_key('jobs'): 
+                count_jobs = len(decoded['jobs'])
+                print 'count jobs: '+str(count_jobs)
+                for j in decoded['jobs']:
+                    job = Job(**j)
+                    print job
+                    break
+        else:
+            print "ERROR http status = "+str(result.status)
+            
+        connection.close()
+    except socket.gaierror:
+        pass
     return job
     
     
 def getVMs():
-    connection =  httplib.HTTPConnection(url)
-    connection.request('GET', '/get/vms/')
-    result = connection.getresponse()
-    data = result.read()
     vms = []
-    
-    if result.status == 200:
-        decoded = json.loads(data)
-        if decoded.has_key('vms'): 
-            count_vms = len(decoded['vms'])
-            print 'count vms: '+str(count_vms)
-            for vm in decoded['vms']:
-                temp = VM(**vm)
-                vms.append(temp)
-                print vm
-    else:
-        print "ERROR http status = "+str(result.status)
+    try:
+        connection =  httplib.HTTPConnection(url)
+        connection.request('GET', '/get/vms/')
+        result = connection.getresponse()
+        data = result.read()
         
-    connection.close()
+        if result.status == 200:
+            decoded = json.loads(data)
+            if decoded.has_key('vms'): 
+                count_vms = len(decoded['vms'])
+                print 'count vms: '+str(count_vms)
+                for vm in decoded['vms']:
+                    temp = VM(**vm)
+                    vms.append(temp)
+                    print vm
+        else:
+            print "ERROR http status = "+str(result.status)
+            
+        connection.close()
+    except socket.gaierror:
+        pass
     return vms
 
 
 def putJobs(jobs):
     # HTTP PUT Job's
-    connection =  httplib.HTTPConnection(url)
-    body_content = json.dumps({ 'jobs': jobs}, indent=2, default=Job.serialize)
-    print body_content
-    headers = {"User-Agent": "python-httplib"}
-    connection.request('PUT', '/put/jobs/', body_content, headers)
-    result = connection.getresponse()
-    if result.status == 200:
-        print 'PUT jobs OK - HTTP 200'
-    else:
-        print result.status
-    connection.close()
+    try:
+        connection =  httplib.HTTPConnection(url)
+        body_content = json.dumps({ 'jobs': jobs}, indent=2, default=Job.serialize)
+        print body_content
+        headers = {"User-Agent": "python-httplib"}
+        connection.request('PUT', '/put/jobs/', body_content, headers)
+        result = connection.getresponse()
+        if result.status == 200:
+            print 'PUT jobs OK - HTTP 200'
+        else:
+            print result.status
+        connection.close()
+    except socket.gaierror:
+        pass
 
 
 def putJob(job):
     # HTTP PUT Job
-    connection =  httplib.HTTPConnection(url)
-    body_content = json.dumps({ 'jobs': [job] }, indent=2, default=Job.serialize)
-    print body_content
-    headers = {"User-Agent": "python-httplib"}
-    connection.request('PUT', '/put/job/', body_content, headers)
-    result = connection.getresponse()
-    if result.status == 200:
-        print 'PUT jobs OK - HTTP 200'
-    else:
-        print result.status
-    connection.close()
+    try:
+        connection =  httplib.HTTPConnection(url)
+        body_content = json.dumps({ 'jobs': [job] }, indent=2, default=Job.serialize)
+        print body_content
+        headers = {"User-Agent": "python-httplib"}
+        connection.request('PUT', '/put/job/', body_content, headers)
+        result = connection.getresponse()
+        if result.status == 200:
+            print 'PUT jobs OK - HTTP 200'
+        else:
+            print result.status
+        connection.close()
+    except socket.gaierror:
+        pass
 
 
 def putVMs(vms):
     # HTTP PUT VM's
-    connection =  httplib.HTTPConnection(url)
-    body_content = json.dumps({ 'vms': vms}, indent=2, default=VM.serialize)
-    print body_content
-    headers = {"User-Agent": "python-httplib"}
-    connection.request('PUT', '/put/vms/', body_content, headers)
-    result = connection.getresponse()
-    if result.status == 200:
-        print 'PUT vms OK - HTTP 200'
-    else:
-        print result.status
-    connection.close()
+    try:
+        connection =  httplib.HTTPConnection(url)
+        body_content = json.dumps({ 'vms': vms}, indent=2, default=VM.serialize)
+        print body_content
+        headers = {"User-Agent": "python-httplib"}
+        connection.request('PUT', '/put/vms/', body_content, headers)
+        result = connection.getresponse()
+        if result.status == 200:
+            print 'PUT vms OK - HTTP 200'
+        else:
+            print result.status
+        connection.close()
+    except socket.gaierror:
+        pass
 
 def createVMs(popSize):
     return True #TODO
