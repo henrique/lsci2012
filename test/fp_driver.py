@@ -84,8 +84,8 @@ def calibrate_forwardPremium():
     try:
         tmp = LocalState.load("driver", opt)
         print tmp, opt
-    except IOError as e:
-        print 'Nothing to be loaded...', e
+    except:
+        print 'Nothing to be loaded...'
     
 
 

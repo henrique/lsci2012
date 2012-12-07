@@ -137,7 +137,7 @@ def getJobs():
             print "ERROR http status = "+str(result.status)
             
         connection.close()
-    except socket.gaierror:
+    except:
         pass
     return jobs
     
@@ -164,7 +164,7 @@ def getNextJob():
             print "ERROR http status = "+str(result.status)
             
         connection.close()
-    except socket.gaierror:
+    except:
         pass
     return job
     
@@ -190,7 +190,7 @@ def getVMs():
             print "ERROR http status = "+str(result.status)
             
         connection.close()
-    except socket.gaierror:
+    except:
         pass
     return vms
 
@@ -209,7 +209,7 @@ def putJobs(jobs):
         else:
             print result.status
         connection.close()
-    except socket.gaierror:
+    except:
         pass
 
 
@@ -227,7 +227,7 @@ def putJob(job):
         else:
             print result.status
         connection.close()
-    except socket.gaierror:
+    except:
         pass
 
 
@@ -245,7 +245,7 @@ def putVMs(vms):
         else:
             print result.status
         connection.close()
-    except socket.gaierror:
+    except:
         pass
 
 def createVMs(popSize):
