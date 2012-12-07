@@ -8,7 +8,7 @@ from job import *
 # Clean DB first and EXECUTE testPut() before this script!!
 #####################################################################
 
-#url = 'jcluster12.appspot.com'
+#url = 'jclustser12.appspot.com'
 url = 'localhost:8080'
 
 # GET single job 
