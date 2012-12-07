@@ -8,8 +8,10 @@
     	<ul> /get/job/ -> return a new job (not running)</ul>
     	<ul> /get/jobs/ -> return all jobs</ul>
     <li>PUT</li>
-    	<ul> /put/ -> put all VM's or Job's</ul>
-    	<ul> /put/job/ -> put a single job</ul>
+    	<ul> /put/vm/ -> put a single VM (safes IP from http request), use from VM</ul>
+    	<ul> /put/job/ -> put a single job (safes IP from http request), use from VM</ul>
+    	<ul> /put/vms/ -> put all VM's (safes IP from json), use from driver</ul>
+    	<ul> /put/jobs/ -> put all VM's (safes IP from json), use from driver</ul>
     
     <p>Example PUT JSON files:</p>
     <a href="/files/jsonJobs.txt">Job's</a></br>
