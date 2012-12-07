@@ -5,6 +5,7 @@ from google.appengine.ext import db
 from vm import *
 from job import *
 
+
 class MainPage(webapp2.RequestHandler):
   def get(self):
       self.response.headers['Content-Type'] = 'text/html'
@@ -61,14 +62,17 @@ class GetVm(webapp2.RequestHandler):
 class GetAllJobs(webapp2.RequestHandler):
     def get(self):
         self.response.headers['Content-Type'] = 'application/json'
+        #l = {}
         cur_iter = Job.currentIteration()
         logging.info("get all jobs received iteration:" + str(cur_iter))
+        #l['iteration'] = cur_iter
+        
         
         # GET a not running job from DB
         jobs = db.GqlQuery("Select * "
                            "FROM Job "
-                           #"WHERE iteration = " + cur_iter
-                           "ORDER BY jobId")
+                           #"WHERE iteration = :1 "
+                           "ORDER BY iteration, jobId")#, cur_iter)
         countJobs = jobs.count()
         logging.info("countJobs: "+str(countJobs))
         if countJobs > 0:
@@ -228,14 +232,14 @@ class PutVm(webapp2.RequestHandler):
         
 
 app = webapp2.WSGIApplication([('/', MainPage),
-                               ('/put/jobs', PutAllJobs),
-                               ('/put/vms', PutAllVms),
-                               ('/put/job', PutJob),
-                               ('/put/vm', PutVm),
-                               ('/get/job', GetJob),
-                               ('/get/vm', GetVm),
-                               ('/get/jobs', GetAllJobs),
-                               ('/get/vms', GetAllVms)],
+                               ('/put/jobs/', PutAllJobs),
+                               ('/put/vms/', PutAllVms),
+                               ('/put/job/', PutJob),
+                               ('/put/vm/', PutVm),
+                               ('/get/job/', GetJob),
+                               ('/get/vm/', GetVm),
+                               ('/get/jobs/', GetAllJobs),
+                               ('/get/vms/', GetAllVms)],
                               debug=True)
 
 # APP STARTUP - INIT DB

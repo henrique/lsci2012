@@ -30,6 +30,17 @@ indexes:
 
 - kind: Job
   properties:
+  - name: iteration
+  - name: jobId
+
+- kind: Job
+  properties:
+  - name: iteration
+    direction: desc
+  - name: jobId
+
+- kind: Job
+  properties:
   - name: running
   - name: counter
 
