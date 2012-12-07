@@ -9,7 +9,7 @@ from fp_lib import *
 from gc3libs.optimizer.dif_evolution import DifferentialEvolutionParallel
 
 
-POPULATION_SIZE=3 #TODO 100
+POPULATION_SIZE=100 #TODO 100
 
 
 
@@ -103,6 +103,8 @@ def calibrate_forwardPremium():
         finished = True
         for job in pop:
             finished &= job.finished
+#            if job.iteration > opt.cur_iter:  #restore current iteration counter
+#                opt.cur_iter = job.iteration
 
         if finished:
             # Update population and evaluate convergence
@@ -116,7 +118,7 @@ def calibrate_forwardPremium():
 
             # Update iteration count
 #            global cur_iter, bestval
-            opt.cur_iter += 1 #TODO: get from db
+            opt.cur_iter += 1
 #            opt.cur_iter = cur_iter
 #            opt.bestvtest/fp_lib.pyal = bestval #!!!
 #            opt.vals = newVals #!!!
