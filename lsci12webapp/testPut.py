@@ -8,7 +8,7 @@ from job import *
 # localhost:8080
 # jcluster12.appspot.com
 ######################
-url = 'localhost:8080'
+url = 'jcluster12.appspot.com'
 YOUR_IP = '127.0.0.1'
 
 N_JOBS = 10

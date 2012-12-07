@@ -8,8 +8,8 @@ from job import *
 # Clean DB first and EXECUTE testPut() before this script!!
 #####################################################################
 
-#url = 'jclustser12.appspot.com'
-url = 'localhost:8080'
+url = 'jcluster12.appspot.com'
+#url = 'localhost:8080'
 
 # GET single job 
 connection =  httplib.HTTPConnection(url)
@@ -38,8 +38,8 @@ connection.close()
 
 
 # PUT job.running = True
-job.running = True
-l = { 'jobs': [ job.getJSON() ]}
+jobReal.running = True
+l = { 'jobs': [ jobReal.getJSON() ]}
 
 data_string_jobs = json.dumps(l, indent=2)
 
@@ -57,10 +57,10 @@ connection.close()
 
 # PUT job.running = False, Finished=True, result=8.8
 
-job.running = False
-job.finished = True
-job.result = 8.8
-l = { 'jobs': [ job.getJSON() ]}
+jobReal.running = False
+jobReal.finished = True
+jobReal.result = 8.8
+l = { 'jobs': [ jobReal.getJSON() ]}
 
 data_string_jobs = json.dumps(l, indent=2)
 
