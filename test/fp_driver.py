@@ -9,7 +9,7 @@ from fp_lib import *
 from gc3libs.optimizer.dif_evolution import DifferentialEvolutionParallel
 
 
-POPULATION_SIZE=1 #TODO 100
+POPULATION_SIZE=3 #TODO 100
 
 
 def forwardPremium(vectors):
@@ -101,8 +101,12 @@ def calibrate_forwardPremium():
         nlc = ev_constr # pass constraints object 
       )
     
-    global optState
-    opt.__dict__.update(optState)
+    try:
+        tmp = LocalState.load("driver", opt)
+        print tmp, opt
+    except KeyError as e:
+        print 'Nothing to be loaded...'
+    
 
 
     # Jobs: create and manage population
@@ -112,10 +116,9 @@ def calibrate_forwardPremium():
         # Initialise population using the arguments passed to the
         # DifferentialEvolutionParallel iniitalization
         opt.new_pop = opt.draw_initial_sample()
-        print opt.__dict__
-        optState = opt.__dict__
+        LocalState.save("driver", opt)
             
-        putJobs(pop2Jobs(opt.new_pop))
+        putJobs(pop2Jobs(opt))
         
     else: # finished?
         finished = True
@@ -136,23 +139,20 @@ def calibrate_forwardPremium():
 #            global cur_iter, bestval
             opt.cur_iter += 1 #TODO: get from db
 #            opt.cur_iter = cur_iter
-#            opt.bestval = bestval #!!!
+#            opt.bestvtest/fp_lib.pyal = bestval #!!!
 #            opt.vals = newVals #!!!
 #            opt.pop = opt.new_pop #!!!
-            print opt.__dict__
-            optState = opt.__dict__
 
             opt.update_population(opt.new_pop, newVals)
 #            bestval = opt.bestval #!!!
-            print opt.__dict__
-            optState = opt.__dict__
+            LocalState.save("driver", opt)
 
             if not opt.has_converged():
                 # Generate new population and enforce constrains
                 opt.new_pop = opt.enforce_constr_re_evolve(opt.modify(opt.pop))
                 
                 # Push and run again!
-                putJobs(pop2Jobs(opt.new_pop))
+                putJobs(pop2Jobs(opt))
                 
             else:
                 # Once iteration has terminated, extract `bestval` which should represent

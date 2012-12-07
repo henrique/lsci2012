@@ -95,39 +95,61 @@ class nlcOne4eachPair():
 
     return c
 
+class LocalState():
+    state = {}
+    
+    @staticmethod
+    def save(key, obj):
+        print "Saving", obj.__dict__
+#        with open(key + '.bak', 'w') as f:
+#            data = json.dumps(obj.__dict__, indent=2)
+#            f.write(str(data))
+        LocalState.state[key] = obj.__dict__
+            
+    @staticmethod
+    def load(key, obj):
+#        with open(key + '.bak', 'r') as f:
+#            data = f.read_all()
+#            data = json.loads(data)
+            data = LocalState.state[key]
+            print "Loading", data
+            obj.__dict__.update(data)
+            return obj
+
+
 
 def runApp(ex, sigmax):
-      print "forwardPremiumOut running with EX=%g, sigmaX=%g ..." % (ex, sigmax)
-      # the actual vale should be extracted from the forwardPremium output file 'simulation.out'
-      call(["rm", "-rf", "output*", "parameters.in"])
-      #call(["mkdir", "output"])
-      rf = open('parameters.in.orig', 'r')
-      with open('parameters.in', 'w') as wf:
+    print "forwardPremiumOut running with EX=%g, sigmaX=%g ..." % (ex, sigmax)
+    # the actual vale should be extracted from the forwardPremium output file 'simulation.out'
+    call(["rm", "-rf", "output*", "parameters.in"])
+    #call(["mkdir", "output"])
+    rf = open('parameters.in.orig', 'r')
+    with open('parameters.in', 'w') as wf:
         while 1:
-          line = rf.readline()
-          if not line:
-              break
-          line = line.replace('EX', str(ex))
-          line = line.replace("sigmaX", str(sigmax))
-          wf.write(line)
-      call(["./forwardPremiumOut"])
-      try:
+            line = rf.readline()
+            if not line:
+                break
+    line = line.replace('EX', str(ex))
+    line = line.replace("sigmaX", str(sigmax))
+    wf.write(line)
+    call(["./forwardPremiumOut"])
+    try:
         with open('output/simulation.out') as of:
-          print "simulation.out", of.readline() #TODO: read result
-          FAKE_FF_BETA = 2
-          return FAKE_FF_BETA
-      except IOError as e:
+            print "simulation.out", of.readline() #TODO: read result
+            FAKE_FF_BETA = 2
+            return FAKE_FF_BETA
+    except IOError as e:
         print 'Job Failed!'
-        
-      return PENALTY_VALUE
+    
+    return PENALTY_VALUE
 
 
-def pop2Jobs(pop):
+def pop2Jobs(opt):
     jobs = []
     i = 0
-    for ex, sig in pop:
+    for ex, sig in opt.new_pop:
         i += 1
-        job = Job(jobId=i,paraEA=ex,paraSigma=sig)
+        job = Job(jobId=i, paraEA=ex, paraSigma=sig, iteration=opt.cur_iter+1)
         jobs.append(job)
     return jobs
 
