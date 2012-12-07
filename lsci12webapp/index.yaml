@@ -24,6 +24,12 @@ indexes:
 
 - kind: Job
   properties:
+  - name: iter
+    direction: desc
+  - name: jobId
+
+- kind: Job
+  properties:
   - name: running
   - name: counter
 

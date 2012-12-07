@@ -1,1 +1,4 @@
 *.pyc
+*.pydevproject
+*.txt
+index.yaml
