@@ -8,6 +8,8 @@ import subprocess
 import httplib
 import json
 
+import numpy as np
+
 from subprocess import call
 
 PENALTY_VALUE=10000
@@ -15,8 +17,8 @@ PENALTY_VALUE=10000
 
 #### URL #############
 
-#url = 'jcluster12.appspot.com'
-url = 'localhost:8080'
+url = 'jcluster12.appspot.com'
+#url = 'localhost:8080'
 
 print 'Running on', url
 
@@ -32,7 +34,7 @@ class Job():
         self.finished = False
         self.result = None
         self.counter = 0
-        self.iter = 0
+        self.iteration = 0
         self.__dict__.update(entries)
 
     @staticmethod
@@ -207,7 +209,7 @@ def putJobs(jobs):
     body_content = json.dumps({ 'jobs': jobs}, indent=2, default=Job.serialize)
     print body_content
     headers = {"User-Agent": "python-httplib"}
-    connection.request('PUT', '/put/', body_content, headers)
+    connection.request('PUT', '/put/jobs/', body_content, headers)
     result = connection.getresponse()
     if result.status == 200:
         print 'PUT jobs OK - HTTP 200'
@@ -237,7 +239,7 @@ def putVMs(vms):
     body_content = json.dumps({ 'vms': vms}, indent=2, default=VM.serialize)
     print body_content
     headers = {"User-Agent": "python-httplib"}
-    connection.request('PUT', '/put/', body_content, headers)
+    connection.request('PUT', '/put/vms/', body_content, headers)
     result = connection.getresponse()
     if result.status == 200:
         print 'PUT vms OK - HTTP 200'

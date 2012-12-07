@@ -9,7 +9,7 @@ from fp_lib import *
 from gc3libs.optimizer.dif_evolution import DifferentialEvolutionParallel
 
 
-POPULATION_SIZE=3 #TODO 100
+POPULATION_SIZE=1 #TODO 100
 
 
 def forwardPremium(vectors):
@@ -67,7 +67,10 @@ def forwardPremium(vectors):
         results.append(abs(FAKE_FF_BETA - (-0.63))/0.25)
     return results
 
-
+cur_iter = 0 #TODO: get from db
+bestval = PENALTY_VALUE+1 #!!!
+optState = {}
+            
 def calibrate_forwardPremium():
     """
     Drver script to calibrate forwardPremium EX and sigmaX parameters.
@@ -97,6 +100,9 @@ def calibrate_forwardPremium():
         de_strategy = 'DE_local_to_best',
         nlc = ev_constr # pass constraints object 
       )
+    
+    global optState
+    opt.__dict__.update(optState)
 
 
     # Jobs: create and manage population
@@ -106,6 +112,8 @@ def calibrate_forwardPremium():
         # Initialise population using the arguments passed to the
         # DifferentialEvolutionParallel iniitalization
         opt.new_pop = opt.draw_initial_sample()
+        print opt.__dict__
+        optState = opt.__dict__
             
         putJobs(pop2Jobs(opt.new_pop))
         
@@ -113,7 +121,7 @@ def calibrate_forwardPremium():
         finished = True
         for job in pop:
             finished &= job.finished
-            
+
         if finished:
             # Update population and evaluate convergence
             newVals = []
@@ -123,14 +131,21 @@ def calibrate_forwardPremium():
                 newVals.append(job.result if job.result != None else PENALTY_VALUE)                
                 opt.new_pop[k,:] = (job.paraEA, job.paraSigma)
                 k += 1
-                
+
             # Update iteration count
+#            global cur_iter, bestval
             opt.cur_iter += 1 #TODO: get from db
-            opt.bestval = PENALTY_VALUE+1 #!!!
-            opt.vals = newVals #!!!
-            opt.pop = opt.new_pop #!!!
-                
+#            opt.cur_iter = cur_iter
+#            opt.bestval = bestval #!!!
+#            opt.vals = newVals #!!!
+#            opt.pop = opt.new_pop #!!!
+            print opt.__dict__
+            optState = opt.__dict__
+
             opt.update_population(opt.new_pop, newVals)
+#            bestval = opt.bestval #!!!
+            print opt.__dict__
+            optState = opt.__dict__
 
             if not opt.has_converged():
                 # Generate new population and enforce constrains
