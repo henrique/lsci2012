@@ -8,8 +8,6 @@ import subprocess
 import httplib
 import json
 
-import numpy as np
-
 from subprocess import call
 
 PENALTY_VALUE=10000
@@ -57,43 +55,6 @@ class VM(dict):
         return str(self.__dict__)
 
 
-
-class nlcOne4eachPair():
-  def __init__(self, lower_bds, upper_bds):
-
-    self.lower_bds = lower_bds
-    self.upper_bds = upper_bds
-    self.ctryPair = ['JP', 'US']
- 
-    self.EY = [ 1.005416, 1.007292 ]
-    self.sigmaY = [ 0.010643, 0.00862 ]
-      
-  def __call__(self, x):
-    '''
-    Evaluates constraints. 
-    Inputs: 
-      x -- Habit parametrization, EH, sigmaH
-    Outputs: 
-      c -- Vector of constraints values, where c_i >= 0 indicates that constraint is satisified.
-           Constraints 1-4 are bound constraints for EH and sigmaH
-           Constraints 5 and 6 are economic constraints, one for Japan, one for US. 
-    '''
-    c = np.array([])
-    # bound constraints
-    # EH box
-    c = np.append(c, x[0] - self.lower_bds[0])
-    c = np.append(c, -(x[0] - self.upper_bds[0]))
-    # sigmaH box
-    c = np.append(c, x[1] - self.lower_bds[1])
-    c = np.append(c, -(x[1] - self.upper_bds[1]))
-    # both countries have the same E
-    EH     = np.array([x[0], x[0]])
-    sigmaH = np.array([x[1], x[1]])
-
-    for ixCtry in range(2):
-      c = np.append(c, ( EH[ixCtry] / sigmaH[ixCtry] ) * ( self.sigmaY[ixCtry] / self.EY[ixCtry] ) - 1 )
-
-    return c
 
 class LocalState():
     state = {}
@@ -246,7 +207,7 @@ def putJob(job):
     body_content = json.dumps({ 'jobs': [job] }, indent=2, default=Job.serialize)
     print body_content
     headers = {"User-Agent": "python-httplib"}
-    connection.request('PUT', '/put/jobs/', body_content, headers)
+    connection.request('PUT', '/put/job/', body_content, headers)
     result = connection.getresponse()
     if result.status == 200:
         print 'PUT jobs OK - HTTP 200'
@@ -278,16 +239,16 @@ if __name__ == '__main__':
     getJobs()
     getVMs()
     putJobs([
-        Job(**{'paraSigma': 0.00203506248812, 'finished': False, 'paraEA': 0.826794792732, 'jobId': 1, 'iteration': 0, 'running': False, 'result': None, 'vmIp': None}),
-        Job(**{'paraSigma': 0.00203506248812, 'finished': False, 'paraEA': 0.826794792732, 'jobId': 2, 'iteration': 0, 'running': False, 'result': None, 'vmIp': None})
+        Job(**{'paraSigma': 0.00203506248812, 'finished': False, 'paraEA': 0.826794792732, 'jobId': 1, 'running': False, 'result': None, 'vmIp': None}),
+        Job(**{'paraSigma': 0.00203506248812, 'finished': False, 'paraEA': 0.826794792732, 'jobId': 2, 'running': False, 'result': None, 'vmIp': None})
         ])
     getJobs()
     putJobs([
-        Job(**{'paraSigma': 0.00203506248812, 'finished': False, 'paraEA': 0.826794792732, 'jobId': 1, 'iteration': 1, 'running': False, 'result': None, 'vmIp': None}),
-        Job(**{'paraSigma': 0.00203506248812, 'finished': False, 'paraEA': 0.826794792732, 'jobId': 2, 'iteration': 1, 'running': False, 'result': None, 'vmIp': None})
+        Job(**{'paraSigma': 0.00203506248812, 'finished': False, 'paraEA': 0.826794792732, 'jobId': 1, 'iter': 1, 'running': False, 'result': None, 'vmIp': None}),
+        Job(**{'paraSigma': 0.00203506248812, 'finished': False, 'paraEA': 0.826794792732, 'jobId': 2, 'iter': 1, 'result': None, 'vmIp': None})
         ])
     getJobs()
     putJob(
-        Job(**{'paraSigma': 0.00203506248812, 'finished': False, 'paraEA': 0.826794792732, 'jobId': 1, 'iteration': 1, 'running': True, 'result': None, 'vmIp': 'LOCALHOST'})
+        Job(**{'paraSigma': 0.00203506248812, 'finished': False, 'paraEA': 0.826794792732, 'jobId': 1, 'running': True, 'result': None, 'vmIp': 'LOCALHOST'})
         )
     getJobs()

@@ -12,60 +12,45 @@ from gc3libs.optimizer.dif_evolution import DifferentialEvolutionParallel
 POPULATION_SIZE=3 #TODO 100
 
 
-def forwardPremium(vectors):
-    """
-    For each element of the input vectors, `forwardPremiumOut`
-    execution needs to be launched and supervised.
-    Parameter file `parameters.in` needs to be customised for each
-    member of the given population and passed as part of the
-    `forwardPremiumOut` execution either to the cloud or to the grid
-    infrastructure.
-    Once the execution of `forwardPremiumOut` has terminated, the
-    value of `FamaFrenchbeta` should be extracted from the output file
-    `simulation.out` located in the output folder.
-    If a simulation does not produce a valid output, a penalty value
-    should be used instead (use PENALTY_VALUE).
-    The forwardPremium function terminates when *all* members of the
-    given population have been evaluated and a result vector
-    containing the scaled `FamaFrenchbeta` values should then be returned
 
-    Arguments:
-    `vectors`: list of population members to be exaluated
-    example of vectors [ EX, sigmaX ] of size 10:
-    
-    [ 0.82679479,  0.00203506]
-    [ 0.97514143,  0.00533972]
-    [ 0.93623727,  0.00291099]
-    [ 0.68093853,  0.00131595]
-    [ 0.92752913,  0.00691528]
-    [ 0.8828415,  0.00598679]
-    [ 0.69607706,  0.00264031]
-    [ 0.87176971,  0.00162624]
-    [ 0.50521085,  0.00167101]
-    [ 0.96557172,  0.00473888]
+class nlcOne4eachPair():
+  def __init__(self, lower_bds, upper_bds):
 
-    Starting from `parameters.in` template file
-    http://ocikbapps.uzh.ch/gc3wiki/teaching/lsci2012/project/parameters.in
-    substitute EA/EB and sigmaA/sigmaB from each
-    member of the given population.
+    self.lower_bds = lower_bds
+    self.upper_bds = upper_bds
+    self.ctryPair = ['JP', 'US']
+ 
+    self.EY = [ 1.005416, 1.007292 ]
+    self.sigmaY = [ 0.010643, 0.00862 ]
+      
+  def __call__(self, x):
+    '''
+    Evaluates constraints. 
+    Inputs: 
+      x -- Habit parametrization, EH, sigmaH
+    Outputs: 
+      c -- Vector of constraints values, where c_i >= 0 indicates that constraint is satisified.
+           Constraints 1-4 are bound constraints for EH and sigmaH
+           Constraints 5 and 6 are economic constraints, one for Japan, one for US. 
+    '''
+    c = np.array([])
+    # bound constraints
+    # EH box
+    c = np.append(c, x[0] - self.lower_bds[0])
+    c = np.append(c, -(x[0] - self.upper_bds[0]))
+    # sigmaH box
+    c = np.append(c, x[1] - self.lower_bds[1])
+    c = np.append(c, -(x[1] - self.upper_bds[1]))
+    # both countries have the same E
+    EH     = np.array([x[0], x[0]])
+    sigmaH = np.array([x[1], x[1]])
 
-    Output:
-    `results`: list of corresponding `FamaFrenchbeta` values scaled in respect
-    of the empirical value ( -0.63 )
-    Note: the FamaFrenchbeta value extracted from the simulation output file,
-    needs to be compared with the empirical value and scaled in respect of the
-    standard deviation:
-            abs(`FamaFrenchbeta` - (-0.63))/0.25
-    This is the value that should be returned as part of `results` for each element
-    of the given population (i.e. vectors)
+    for ixCtry in range(2):
+      c = np.append(c, ( EH[ixCtry] / sigmaH[ixCtry] ) * ( self.sigmaY[ixCtry] / self.EY[ixCtry] ) - 1 )
 
-    """
-    # replace this with a real implementation
-    results = []
-    for ex, sigmax in vectors:
-        FAKE_FF_BETA = runApp(ex, sigmax)
-        results.append(abs(FAKE_FF_BETA - (-0.63))/0.25)
-    return results
+    return c
+
+
 
 cur_iter = 0 #TODO: get from db
 bestval = PENALTY_VALUE+1 #!!!
