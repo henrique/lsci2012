@@ -32,7 +32,7 @@ class Job():
         self.finished = False
         self.result = None
         self.counter = 0
-        self.iter = 0
+        self.iteration = 0
         self.__dict__.update(entries)
 
     @staticmethod
@@ -207,7 +207,7 @@ def putJobs(jobs):
     body_content = json.dumps({ 'jobs': jobs}, indent=2, default=Job.serialize)
     print body_content
     headers = {"User-Agent": "python-httplib"}
-    connection.request('PUT', '/put/', body_content, headers)
+    connection.request('PUT', '/put/job/', body_content, headers)
     result = connection.getresponse()
     if result.status == 200:
         print 'PUT jobs OK - HTTP 200'
@@ -222,7 +222,7 @@ def putJob(job):
     body_content = json.dumps({ 'jobs': [job] }, indent=2, default=Job.serialize)
     print body_content
     headers = {"User-Agent": "python-httplib"}
-    connection.request('PUT', '/put/job/', body_content, headers)
+    connection.request('PUT', '/put/jobs/', body_content, headers)
     result = connection.getresponse()
     if result.status == 200:
         print 'PUT jobs OK - HTTP 200'
@@ -237,7 +237,7 @@ def putVMs(vms):
     body_content = json.dumps({ 'vms': vms}, indent=2, default=VM.serialize)
     print body_content
     headers = {"User-Agent": "python-httplib"}
-    connection.request('PUT', '/put/', body_content, headers)
+    connection.request('PUT', '/put/vms/', body_content, headers)
     result = connection.getresponse()
     if result.status == 200:
         print 'PUT vms OK - HTTP 200'
@@ -254,16 +254,16 @@ if __name__ == '__main__':
     getJobs()
     getVMs()
     putJobs([
-        Job(**{'paraSigma': 0.00203506248812, 'finished': False, 'paraEA': 0.826794792732, 'jobId': 1, 'running': False, 'result': None, 'vmIp': None}),
-        Job(**{'paraSigma': 0.00203506248812, 'finished': False, 'paraEA': 0.826794792732, 'jobId': 2, 'running': False, 'result': None, 'vmIp': None})
+        Job(**{'paraSigma': 0.00203506248812, 'finished': False, 'paraEA': 0.826794792732, 'jobId': 1, 'iteration': 0, 'running': False, 'result': None, 'vmIp': None}),
+        Job(**{'paraSigma': 0.00203506248812, 'finished': False, 'paraEA': 0.826794792732, 'jobId': 2, 'iteration': 0, 'running': False, 'result': None, 'vmIp': None})
         ])
     getJobs()
     putJobs([
-        Job(**{'paraSigma': 0.00203506248812, 'finished': False, 'paraEA': 0.826794792732, 'jobId': 1, 'iter': 1, 'running': False, 'result': None, 'vmIp': None}),
-        Job(**{'paraSigma': 0.00203506248812, 'finished': False, 'paraEA': 0.826794792732, 'jobId': 2, 'iter': 1, 'result': None, 'vmIp': None})
+        Job(**{'paraSigma': 0.00203506248812, 'finished': False, 'paraEA': 0.826794792732, 'jobId': 1, 'iteration': 1, 'running': False, 'result': None, 'vmIp': None}),
+        Job(**{'paraSigma': 0.00203506248812, 'finished': False, 'paraEA': 0.826794792732, 'jobId': 2, 'iteration': 1, 'running': False, 'result': None, 'vmIp': None})
         ])
     getJobs()
     putJob(
-        Job(**{'paraSigma': 0.00203506248812, 'finished': False, 'paraEA': 0.826794792732, 'jobId': 1, 'running': True, 'result': None, 'vmIp': 'LOCALHOST'})
+        Job(**{'paraSigma': 0.00203506248812, 'finished': False, 'paraEA': 0.826794792732, 'jobId': 1, 'iteration': 1, 'running': True, 'result': None, 'vmIp': 'LOCALHOST'})
         )
     getJobs()
