@@ -67,7 +67,10 @@ def forwardPremium(vectors):
         results.append(abs(FAKE_FF_BETA - (-0.63))/0.25)
     return results
 
-
+cur_iter = 0 #TODO: get from db
+bestval = PENALTY_VALUE+1 #!!!
+optState = {}
+            
 def calibrate_forwardPremium():
     """
     Drver script to calibrate forwardPremium EX and sigmaX parameters.
@@ -97,6 +100,13 @@ def calibrate_forwardPremium():
         de_strategy = 'DE_local_to_best',
         nlc = ev_constr # pass constraints object 
       )
+    
+    try:
+        tmp = LocalState.load("driver", opt)
+        print tmp, opt
+    except KeyError as e:
+        print 'Nothing to be loaded...'
+    
 
 
     # Jobs: create and manage population
@@ -106,14 +116,15 @@ def calibrate_forwardPremium():
         # Initialise population using the arguments passed to the
         # DifferentialEvolutionParallel iniitalization
         opt.new_pop = opt.draw_initial_sample()
+        LocalState.save("driver", opt)
             
-        putJobs(pop2Jobs(opt.new_pop))
+        putJobs(pop2Jobs(opt))
         
     else: # finished?
         finished = True
         for job in pop:
             finished &= job.finished
-            
+
         if finished:
             # Update population and evaluate convergence
             newVals = []
@@ -123,21 +134,25 @@ def calibrate_forwardPremium():
                 newVals.append(job.result if job.result != None else PENALTY_VALUE)                
                 opt.new_pop[k,:] = (job.paraEA, job.paraSigma)
                 k += 1
-                
+
             # Update iteration count
+#            global cur_iter, bestval
             opt.cur_iter += 1 #TODO: get from db
-            opt.bestval = PENALTY_VALUE+1 #!!!
-            opt.vals = newVals #!!!
-            opt.pop = opt.new_pop #!!!
-                
+#            opt.cur_iter = cur_iter
+#            opt.bestvtest/fp_lib.pyal = bestval #!!!
+#            opt.vals = newVals #!!!
+#            opt.pop = opt.new_pop #!!!
+
             opt.update_population(opt.new_pop, newVals)
+#            bestval = opt.bestval #!!!
+            LocalState.save("driver", opt)
 
             if not opt.has_converged():
                 # Generate new population and enforce constrains
                 opt.new_pop = opt.enforce_constr_re_evolve(opt.modify(opt.pop))
                 
                 # Push and run again!
-                putJobs(pop2Jobs(opt.new_pop))
+                putJobs(pop2Jobs(opt))
                 
             else:
                 # Once iteration has terminated, extract `bestval` which should represent
