@@ -8,18 +8,18 @@ import subprocess
 import httplib
 import json
 
-import numpy as np
-
 from subprocess import call
 
 PENALTY_VALUE=10000
 
 
 #### URL #############
-# localhost:8080
-# jcluster12.appspot.com
-######################
-url = 'jcluster12.appspot.com'
+
+#url = 'jcluster12.appspot.com'
+url = 'localhost:8080'
+
+print 'Running on', url
+
 
 
 class Job():
@@ -32,6 +32,7 @@ class Job():
         self.finished = False
         self.result = None
         self.counter = 0
+        self.iter = 0
         self.__dict__.update(entries)
 
     @staticmethod
@@ -221,7 +222,7 @@ def putJob(job):
     body_content = json.dumps({ 'jobs': [job] }, indent=2, default=Job.serialize)
     print body_content
     headers = {"User-Agent": "python-httplib"}
-    connection.request('PUT', '/put/job', body_content, headers)
+    connection.request('PUT', '/put/job/', body_content, headers)
     result = connection.getresponse()
     if result.status == 200:
         print 'PUT jobs OK - HTTP 200'
@@ -246,3 +247,23 @@ def putVMs(vms):
 
 def createVMs(popSize):
     return True #TODO
+
+
+if __name__ == '__main__':
+    #testing
+    getJobs()
+    getVMs()
+    putJobs([
+        Job(**{'paraSigma': 0.00203506248812, 'finished': False, 'paraEA': 0.826794792732, 'jobId': 1, 'running': False, 'result': None, 'vmIp': None}),
+        Job(**{'paraSigma': 0.00203506248812, 'finished': False, 'paraEA': 0.826794792732, 'jobId': 2, 'running': False, 'result': None, 'vmIp': None})
+        ])
+    getJobs()
+    putJobs([
+        Job(**{'paraSigma': 0.00203506248812, 'finished': False, 'paraEA': 0.826794792732, 'jobId': 1, 'iter': 1, 'running': False, 'result': None, 'vmIp': None}),
+        Job(**{'paraSigma': 0.00203506248812, 'finished': False, 'paraEA': 0.826794792732, 'jobId': 2, 'iter': 1, 'result': None, 'vmIp': None})
+        ])
+    getJobs()
+    putJob(
+        Job(**{'paraSigma': 0.00203506248812, 'finished': False, 'paraEA': 0.826794792732, 'jobId': 1, 'running': True, 'result': None, 'vmIp': 'LOCALHOST'})
+        )
+    getJobs()

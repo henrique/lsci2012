@@ -10,14 +10,15 @@ class Job(db.Model):
     running = db.BooleanProperty()
     finished = db.BooleanProperty()
     counter = db.IntegerProperty(required=True, default=0)
+    iter = db.IntegerProperty(required=True, default=0)
     
 
     def getJSON(self):
-        s = {'jobId': self.jobId, 'vmIp': self.vmIp, 'paraSigma': self.paraSigma, 'paraEA': self.paraEA, 'running': self.running, 'finished': self.finished, 'result': self.result, 'counter': self.counter}
+        s = {'jobId': self.jobId, 'vmIp': self.vmIp, 'paraSigma': self.paraSigma, 'paraEA': self.paraEA, 'running': self.running, 'finished': self.finished, 'result': self.result, 'counter': self.counter, 'iter': self.iter}
         return s
     
     def __repr__(self):
-        return "jobId: "+str(self.jobId)+" vmIp: "+str(self.vmIp)+" paraSigma: "+str(self.paraSigma)+" paraEA:"+str(self.paraEA)+" running: "+str(self.running)+" finished: "+str(self.finished)+" result: "+str(self.result)+" counter: "+str(self.counter)
+        return str(self.__dict__)
     
     def set(self, job):
         self.jobId = job['jobId']
@@ -28,3 +29,11 @@ class Job(db.Model):
         self.finished = job['finished']
         self.result = job['result']
         self.counter = job['counter']
+        self.iter = job['iter']
+
+    @staticmethod
+    def currentIteration(self):
+        q = db.GqlQuery(Job)
+        job = q.order("-iter").fetch(1)
+        print "currentIteration", job
+        return job.iter
