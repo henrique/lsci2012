@@ -16,7 +16,8 @@ PENALTY_VALUE=10000
 
 #### URL #############
 
-url = 'jcluster12.appspot.com'
+url = 'lsci-12.appspot.com'
+#url = 'jcluster12.appspot.com'
 #url = 'localhost:8080'
 
 print 'Running on', url

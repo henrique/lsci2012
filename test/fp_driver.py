@@ -9,7 +9,7 @@ from fp_lib import *
 from gc3libs.optimizer.dif_evolution import DifferentialEvolutionParallel
 
 
-POPULATION_SIZE=100 #TODO 100
+POPULATION_SIZE=20 #TODO 100
 
 
 
@@ -92,12 +92,13 @@ def calibrate_forwardPremium():
     # Jobs: create and manage population
     pop = getJobs()
     
-    if not pop: # empty
-        # Initialise population using the arguments passed to the
-        # DifferentialEvolutionParallel iniitalization
-        opt.new_pop = opt.draw_initial_sample()
-            
-        putJobs(pop2Jobs(opt))
+    if not pop: # empty or network error
+        if not hasattr(opt, 'new_pop') and opt.cur_iter < 0:
+            # Initialise population using the arguments passed to the
+            # DifferentialEvolutionParallel iniitalization
+            opt.new_pop = opt.draw_initial_sample()
+                
+            putJobs(pop2Jobs(opt))
         
     else: # finished?
         finished = True
