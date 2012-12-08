@@ -1,10 +1,12 @@
 #! /usr/bin/env python
 
 import time
+import exceptions
 
 import numpy as np
 
 from fp_lib import *
+from fp_ec2 import *
 
 from gc3libs.optimizer.dif_evolution import DifferentialEvolutionParallel
 
@@ -149,7 +151,10 @@ def calibrate_forwardPremium():
     vms = getVMs()
 
     if not vms: # empty
-        createVMs(POPULATION_SIZE) #TODO create VMs
+        try:
+            fp_ec2_create_vms(5)
+        except Exception as e:
+            print e
     else:
         pass  #TODO manage VMs
 

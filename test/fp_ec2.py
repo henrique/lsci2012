@@ -103,7 +103,7 @@ def fp_ec2_create_vms(n_nodes,
             break
 
     if ec2_location is None:
-        print "[EC2] Couldn't find location" + ec2_location_name
+        print "[EC2] Couldn't find location"# + ec2_location_name
         sys.exit(-1)
 
     ips = []
