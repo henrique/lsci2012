@@ -63,8 +63,8 @@ class GetAllJobs(webapp2.RequestHandler):
     def get(self):
         self.response.headers['Content-Type'] = 'application/json'
         #l = {}
-        cur_iter = Job.currentIteration()
-        logging.info("get all jobs received iteration:" + str(cur_iter))
+        #cur_iter = Job.currentIteration()
+        logging.info("get all jobs received iteration:")# + str(cur_iter))
         #l['iteration'] = cur_iter
         
         
