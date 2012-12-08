@@ -16,9 +16,9 @@ PENALTY_VALUE=10000
 
 #### URL #############
 
-url = 'lsci-12.appspot.com'
+#url = 'lsci-12.appspot.com'
 #url = 'jcluster12.appspot.com'
-#url = 'localhost:8080'
+url = 'localhost:8080'
 
 print 'Running on', url
 
@@ -270,4 +270,5 @@ if __name__ == '__main__':
     putJob(
         Job(**{'paraSigma': 0.00203506248812, 'finished': False, 'paraEA': 0.826794792732, 'jobId': 1, 'running': True, 'result': None, 'vmIp': 'LOCALHOST'})
         )
+    getJobs()
     getJobs()

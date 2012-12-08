@@ -2,6 +2,7 @@ import webapp2
 import logging
 import json
 from google.appengine.ext import db
+from google.appengine.api import memcache
 from vm import *
 from job import *
 
@@ -60,11 +61,24 @@ class GetVm(webapp2.RequestHandler):
        
         
 class GetAllJobs(webapp2.RequestHandler):
+    cachekey = 'alljobs'
+
     def get(self):
         self.response.headers['Content-Type'] = 'application/json'
+        data = memcache.get(self.cachekey)
+        if data is None:
+            data = self.getFromDB()
+            if memcache.set(self.cachekey, data, 300): #5min
+                logging.info("adding to cache: " + self.cachekey)
+        
+        logging.info(data)
+        self.response.out.write(data)
+    
+    
+    def getFromDB(self):
         #l = {}
         #cur_iter = Job.currentIteration()
-        logging.info("get all jobs received iteration:")# + str(cur_iter))
+        logging.info("get all jobs from db")
         #l['iteration'] = cur_iter
         
         
@@ -81,8 +95,7 @@ class GetAllJobs(webapp2.RequestHandler):
            l = { 'jobs': []}
           
         content = json.dumps(l, indent=2)
-        logging.info(content)
-        self.response.out.write(content)
+        return content
 
 
 class GetAllVms(webapp2.RequestHandler):
@@ -108,7 +121,7 @@ class GetAllVms(webapp2.RequestHandler):
 
 class PutAllJobs(webapp2.RequestHandler):
     def put(self):
-        
+        memcache.delete(GetAllJobs.cachekey)
         logging.info('put all jobs received')
         
         data_string = self.request.body
@@ -195,7 +208,9 @@ class PutJob(webapp2.RequestHandler):
         
         for job in jobs:
             job.put()
-            logging.info('put job['+str(job.jobId)+'] into datastore')          
+            logging.info('put job['+str(job.jobId)+'] into datastore')
+            if job.finished:
+                memcache.delete(GetAllJobs.cachekey)
 
 
 class PutVm(webapp2.RequestHandler):
