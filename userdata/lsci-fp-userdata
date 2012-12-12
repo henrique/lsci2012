@@ -1,7 +1,7 @@
-Content-Type: multipart/mixed; boundary="===============4431078790605167794=="
+Content-Type: multipart/mixed; boundary="===============6787841916280955645=="
 MIME-Version: 1.0
 
---===============4431078790605167794==
+--===============6787841916280955645==
 Content-Type: text/upstart-job; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -15,7 +15,7 @@ pre-start exec mkdir -p /var/run/lsci2012
 
 exec /usr/bin/python /var/run/lsci2012/fp_dispatch.py
 
---===============4431078790605167794==
+--===============6787841916280955645==
 Content-Type: text/cloud-boothook; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -168,7 +168,6 @@ def gae_put_vm(url, vm):
     conn.request('PUT', '/put/vm/', body_content, headers)
     result = conn.getresponse()
     conn.close()
-    conn.close()
     if result.status != 200:
         print "[E] got HTTP status %d" % result.status
     return result.status
@@ -264,10 +263,10 @@ def main():
 
     print "[+] ForwardPremium dispatcher starting up..."
 
-    vm = gae_get_vm(URL)
-    if vm == None:
-        print "[E] no VM instance found"
-        sys.exit(-1)
+    vm = None
+    while not vm:
+        vm = gae_get_vm(URL)
+        time.sleep(10)
 
     print "[+] Got VM: %s" % vm
 
@@ -326,4 +325,4 @@ if __name__ == '__main__':
 EOF
 chmod 755 /var/run/lsci2012/fp_dispatch.py
 
---===============4431078790605167794==--
+--===============6787841916280955645==--

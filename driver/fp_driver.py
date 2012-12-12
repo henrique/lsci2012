@@ -143,7 +143,7 @@ def calibrate_forwardPremium():
     vms = getVMs()
 
     if not vms: # empty
-        print "[+] No running EC2 instances found, creating %d" % POPULATION_SIZE
+        print "[+] No running EC2 instances found, creating %d" % N_NODES
         nodes = fp_ec2_create_vms(N_NODES, pubkey_file='/home/tklauser/.ssh/id_rsa.pub')
         vms = []
         for node in nodes:
