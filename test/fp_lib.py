@@ -16,9 +16,9 @@ PENALTY_VALUE=10000
 
 #### URL #############
 
-#url = 'lsci-12.appspot.com'
+url = 'lsci-12.appspot.com'
 #url = 'jcluster12.appspot.com'
-url = 'localhost:8080'
+#url = 'localhost:8080'
 
 print 'Running on', url
 
@@ -47,6 +47,9 @@ class Job():
         
 class VM(dict):
     def __init__(self, **entries): 
+        self.ip = ''
+        self.vmtype = ''
+        self.dateUpdate = ''
         self.__dict__.update(entries)
     
     @staticmethod
@@ -63,7 +66,7 @@ class LocalState():
     
     @staticmethod
     def save(key, obj):
-        print "Saving", obj.__dict__
+#        print "Saving", obj.__dict__
 #        with open(key + '.bak', 'w') as f:
 #            data = json.dumps(obj.__dict__, indent=2)
         LocalState.state = obj.__dict__
@@ -74,7 +77,7 @@ class LocalState():
 #            data = f.read_all()
 #            data = json.loads(data)
             data = LocalState.state
-            print "Loading", data
+#            print "Loading", data
             obj.__dict__.update(data)
             return obj
 
@@ -133,7 +136,7 @@ def getJobs():
                 for job in decoded['jobs']:
                     temp = Job(**job)
                     jobs.append(temp)
-                    print job
+#                    print job
         else:
             print "ERROR http status = "+str(result.status)
             
@@ -159,7 +162,7 @@ def getNextJob():
                 print 'count jobs: '+str(count_jobs)
                 for j in decoded['jobs']:
                     job = Job(**j)
-                    print job
+#                    print job
                     break
         else:
             print "ERROR http status = "+str(result.status)
@@ -186,7 +189,7 @@ def getVMs():
                 for vm in decoded['vms']:
                     temp = VM(**vm)
                     vms.append(temp)
-                    print vm
+#                    print vm
         else:
             print "ERROR http status = "+str(result.status)
             
@@ -201,7 +204,6 @@ def putJobs(jobs):
     try:
         connection =  httplib.HTTPConnection(url)
         body_content = json.dumps({ 'jobs': jobs}, indent=2, default=Job.serialize)
-        print body_content
         headers = {"User-Agent": "python-httplib"}
         connection.request('PUT', '/put/jobs/', body_content, headers)
         result = connection.getresponse()
@@ -219,7 +221,6 @@ def putJob(job):
     try:
         connection =  httplib.HTTPConnection(url)
         body_content = json.dumps({ 'jobs': [job] }, indent=2, default=Job.serialize)
-        print body_content
         headers = {"User-Agent": "python-httplib"}
         connection.request('PUT', '/put/job/', body_content, headers)
         result = connection.getresponse()
@@ -236,8 +237,7 @@ def putVMs(vms):
     # HTTP PUT VM's
     try:
         connection =  httplib.HTTPConnection(url)
-        body_content = json.dumps({ 'vms': vms}, indent=2, default=VM.serialize)
-        print body_content
+        body_content = json.dumps({ 'vms': vms}, indent=2)
         headers = {"User-Agent": "python-httplib"}
         connection.request('PUT', '/put/vms/', body_content, headers)
         result = connection.getresponse()

@@ -10,7 +10,8 @@ import re
 import random
 
 # URL = 'localhost:8080'
-URL = 'jcluster12.appspot.com'
+# URL = 'jcluster12.appspot.com'
+URL = 'lsci-12.appspot.com'
 
 SKEL_INPUT = '/opt/ifi/input'
 BIN_PATH = '/apps/ifi'
@@ -65,7 +66,7 @@ class VM():
         if json == None:
             self.ip = '0.0.0.0'
             self.vmtype = ''
-            self.dateUpdate = datetime.date.today()
+            self.dateUpdate = str(datetime.date.now())
         else:
             self.set(json)
 
@@ -102,7 +103,7 @@ def gae_put_job(url, job):
     conn =  httplib.HTTPConnection(url)
     body_content = json.dumps({ 'jobs' : [ job.getJSON() ] }, indent=2)
     headers = { "User-Agent": "python-httplib" }
-    conn.request('PUT', '/put/', body_content, headers)
+    conn.request('PUT', '/put/job/', body_content, headers)
     result = conn.getresponse()
     conn.close()
     if result.status != 200:
@@ -131,6 +132,17 @@ def get_vm(url):
             return VM(keyname=str(vm['ip']), json=vm)
 
     return None
+
+def gae_put_vm(url, vm):
+    conn =  httplib.HTTPConnection(url)
+    body_content = json.dumps({ 'vms' : [ vm.getJSON() ] }, indent=2)
+    conn.request('PUT', '/put/vm/', body_content, headers)
+    result = conn.getresponse()
+    conn.close()
+    conn.close()
+    if result.status != 200:
+        print "[E] got HTTP status %d" % result.status
+    return result.status
 
 def get_unique_job(url):
     data = gae_get_job(url)
@@ -228,6 +240,8 @@ def main():
         print "[E] no VM instance found"
         sys.exit(-1)
 
+    print "[+] Got VM: %s" % vm
+
     jobs = []
 
     while True:
@@ -273,7 +287,7 @@ def main():
                     else:
                         print "[E] Failed to submit completed job to GAE"
 
-        # TODO: Update VM state on GAE
+        gae_put_vm(URL, vm)
 
         # wait between 5 and 10 seconds to prevent several VMs from accessing GAE simultaneously
         time.sleep(random.randrange(5, 10))
