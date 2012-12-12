@@ -138,6 +138,7 @@ def get_vm(url):
 def gae_put_vm(url, vm):
     conn =  httplib.HTTPConnection(url)
     body_content = json.dumps({ 'vms' : [ vm.getJSON() ] }, indent=2)
+    headers = { "User-Agent": "python-httplib" }
     conn.request('PUT', '/put/vm/', body_content, headers)
     result = conn.getresponse()
     conn.close()
@@ -224,6 +225,7 @@ def gather_results(job):
         result = R_FAMA_FRENCH_BETA.match(line)
         if result:
             ffb = float(result.group(1))
+            ffb = abs(ffb - (-0.63)) / 0.25
             print "[+] Job %d got FamaFrenchBeta %f" % (job.jobId, ffb)
             break
 
@@ -235,14 +237,14 @@ def main():
     os.chdir(WORKDIR)
 
     print "[+] ForwardPremium dispatcher starting up..."
-
+    """
     vm = None
     while not vm:
         vm = gae_get_vm(URL)
         time.sleep(10)
 
     print "[+] Got VM: %s" % vm
-
+    """
     jobs = []
 
     while True:
@@ -252,7 +254,7 @@ def main():
             if job == None:
                 print "[-] No new job found, waiting..."
             else:
-                print "[+] Got eligible job with ID %d" % j.jobId
+                print "[+] Got eligible job with ID %d" % job.jobId
                 create_workenv(job)
                 call_forwardPremiumOut(job)
                 jobs.append(job)
@@ -288,7 +290,7 @@ def main():
                     else:
                         print "[E] Failed to submit completed job to GAE"
 
-        gae_put_vm(URL, vm)
+#        gae_put_vm(URL, vm)
 
         # wait between 5 and 10 seconds to prevent several VMs from accessing GAE simultaneously
         time.sleep(random.randrange(5, 10))
