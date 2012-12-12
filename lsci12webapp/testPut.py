@@ -8,7 +8,7 @@ from job import *
 # localhost:8080
 # jcluster12.appspot.com
 ######################
-url = 'jcluster12.appspot.com'
+url = 'localhost:8080'
 YOUR_IP = '127.0.0.1'
 
 N_JOBS = 10
@@ -48,13 +48,7 @@ l2 = {'vms': [ vm.getJSON() for vm in vms]}
 data_string_jobs = json.dumps(l, indent=2)
 data_string_vms = json.dumps(l2, indent=2)
 
-file = open('files/jsonJobs.txt', 'w')
-file.write(data_string_jobs)
-file.close()
 
-file = open('files/jsonVms.txt', 'w')
-file.write(data_string_vms)
-file.close()
 
 # HTTP PUT Job's
 connection =  httplib.HTTPConnection(url)
