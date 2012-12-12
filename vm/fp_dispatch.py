@@ -66,7 +66,7 @@ class VM():
         if json == None:
             self.ip = '0.0.0.0'
             self.vmtype = ''
-            self.dateUpdate = datetime.date.today()
+            self.dateUpdate = str(datetime.date.now())
         else:
             self.set(json)
 
@@ -138,7 +138,6 @@ def gae_put_vm(url, vm):
     body_content = json.dumps({ 'vms' : [ vm.getJSON() ] }, indent=2)
     conn.request('PUT', '/put/vm/', body_content, headers)
     result = conn.getresponse()
-    conn.close()
     conn.close()
     if result.status != 200:
         print "[E] got HTTP status %d" % result.status
@@ -235,10 +234,10 @@ def main():
 
     print "[+] ForwardPremium dispatcher starting up..."
 
-    vm = gae_get_vm(URL)
-    if vm == None:
-        print "[E] no VM instance found"
-        sys.exit(-1)
+    vm = None
+    while not vm:
+        vm = gae_get_vm(URL)
+        time.sleep(10)
 
     print "[+] Got VM: %s" % vm
 

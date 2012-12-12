@@ -46,7 +46,7 @@ class GetVm(webapp2.RequestHandler):
         
         # GET VM with same request.remote_addr
         q = VM.all()
-        q.filter("vm.ip =", self.request.remote_addr)
+        q.filter("ip =", self.request.remote_addr)
 
         vm = q.get()
         if vm == None:
@@ -211,6 +211,7 @@ class PutJob(webapp2.RequestHandler):
             logging.info('put job['+str(job.jobId)+'] into datastore')
             if job.finished:
                 memcache.delete(GetAllJobs.cachekey)
+                logging.info('memcache deleted!!!!')
 
 
 class PutVm(webapp2.RequestHandler):
@@ -227,6 +228,10 @@ class PutVm(webapp2.RequestHandler):
         if decoded.has_key('vms'):
             count_vms = len(decoded['vms'])
             logging.info('count vms: '+str(count_vms))
+            if count_vms > 1:
+                logging.info("more than 1 vm, abort")
+                self.error(500)
+                return
             vms = []
             for vm in decoded['vms']:
                 ip = self.request.remote_addr
