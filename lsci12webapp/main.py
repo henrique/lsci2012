@@ -46,7 +46,7 @@ class GetVm(webapp2.RequestHandler):
         
         # GET VM with same request.remote_addr
         q = VM.all()
-        q.filter("vm.ip =", self.request.remote_addr)
+        q.filter("ip =", self.request.remote_addr)
 
         vm = q.get()
         if vm == None:

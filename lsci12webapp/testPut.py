@@ -34,7 +34,7 @@ z = VM()
 x.vmtype = 'Amazon'
 y.vmtype = 'Amazon'
 z.vmtype = 'Amazon'
-x.ip = '192.168.1.1'
+x.ip = '127.0.0.1'
 y.ip = '192.168.2.2'
 z.ip = '192.168.3.3'
 
