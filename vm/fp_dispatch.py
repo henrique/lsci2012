@@ -23,12 +23,14 @@ PENALTY = 99.99
 
 R_FAMA_FRENCH_BETA = re.compile(r"^FamaFrenchBeta:\s*(.*)$")
 
+
 class Job():
     def __init__(self, key_name=None, json=None):
         self.key_name = key_name
         self.proc = None
         if json == None:
             self.jobId = 0
+            self.iteration = 0
             self.vmIp = '0.0.0.0'
             self.paraSigma = None
             self.paraEA = None
@@ -39,26 +41,26 @@ class Job():
         else:
             self.set(json)
 
-    def getJSON(self):
-        return { 'jobId'     : self.jobId,
-                 'vmIp'      : self.vmIp,
-                 'paraSigma' : self.paraSigma,
-                 'paraEA'    : self.paraEA,
-                 'running'   : self.running,
-                 'finished'  : self.finished,
-                 'result'    : self.result }
 
+    def getJSON(self):
+        s = {'jobId': self.jobId, 'iteration': self.iteration, 'vmIp': self.vmIp, 'paraSigma': self.paraSigma, 'paraEA': self.paraEA, 'running': self.running, 'finished': self.finished, 'result': self.result, 'counter': self.counter}
+        return s
+    
     def __repr__(self):
-        return "jobId: " + str(self.jobId) + " vmIp: " + str(self.vmIp) + " paraSigma: " + str(self.paraSigma) + " paraEA: " + str(self.paraEA) + " running: " + str(self.running) + " finished: " + str(self.finished) + " result: " + str(self.result)
+        return str(self.getJSON())
 
     def set(self, job):
         self.jobId = job['jobId']
+        self.iteration = job['iteration']
         self.vmIp = job['vmIp']
         self.paraSigma = job['paraSigma']
         self.paraEA = job['paraEA']
         self.running = job['running']
         self.finished = job['finished']
         self.result = job['result']
+        self.counter = job['counter']
+
+
 
 class VM():
     def __init__(self, key_name=None, json=None):
